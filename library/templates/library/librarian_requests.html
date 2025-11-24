@@ -1,0 +1,54 @@
+{% extends 'library/base.html' %}
+
+{% block content %}
+<h1 class="page-heading">All Book Requests</h1>
+
+<div class="content-card">
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Book Title</th>
+                    <th>Request Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in requests %}
+                <tr>
+                    <td>{{ request.student.username }}</td>
+                    <td>{{ request.book.title }}</td>
+                    <td>{{ request.request_date|date:"M d, Y H:i" }}</td>
+                    <td>
+                        <span class="badge
+                            {% if request.status == 'pending' %}bg-warning
+                            {% elif request.status == 'approved' %}bg-success
+                            {% elif request.status == 'rejected' %}bg-danger
+                            {% else %}bg-secondary{% endif %}">
+                            {{ request.status|title }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if request.status == 'pending' %}
+                        <a href="{% url 'approve_request' request.pk %}" class="btn btn-success btn-sm me-2">Approve</a>
+                        <a href="{% url 'reject_request' request.pk %}" class="btn btn-danger btn-sm">Reject</a>
+                        {% elif request.status == 'approved' %}
+                        <a href="{% url 'issue_book' request.pk %}" class="btn btn-primary btn-sm">Issue Book</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No requests found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="mt-3">
+        <a href="{% url 'librarian_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

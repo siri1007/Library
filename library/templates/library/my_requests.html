@@ -1,0 +1,48 @@
+{% extends 'library/base.html' %}
+
+{% block content %}
+<h1 class="page-heading">My Book Requests</h1>
+
+<div class="content-card">
+    {% if requests %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Book Title</th>
+                    <th>Request Date</th>
+                    <th>Status</th>
+                    <th>Approval Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in requests %}
+                <tr>
+                    <td>{{ request.book.title }}</td>
+                    <td>{{ request.request_date|date:"M d, Y" }}</td>
+                    <td>
+                        {% if request.status == 'pending' %}
+                            <span class="badge bg-warning">Pending</span>
+                        {% elif request.status == 'approved' %}
+                            <span class="badge bg-success">Approved</span>
+                        {% elif request.status == 'rejected' %}
+                            <span class="badge bg-danger">Rejected</span>
+                        {% elif request.status == 'issued' %}
+                            <span class="badge bg-info">Issued</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ request.approval_date|date:"M d, Y"|default:"-" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-muted">You have no book requests.</p>
+    {% endif %}
+    <div class="mt-3">
+        <a href="{% url 'book_list' %}" class="btn btn-secondary me-2">Back to Books</a>
+        <a href="{% url 'student_dashboard' %}" class="btn btn-info">My Books</a>
+    </div>
+</div>
+{% endblock %}

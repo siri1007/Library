@@ -1,0 +1,167 @@
+{% extends 'library/base.html' %}
+
+{% block content %}
+<h1 class="page-heading">Librarian Dashboard</h1>
+
+<!-- Statistics Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); color: white;">
+            <i class="bi bi-book"></i>
+        </div>
+        <div class="stat-number">{{ total_books|default:0 }}</div>
+        <div class="stat-label">Total Books</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, var(--accent-color), #059669); color: white;">
+            <i class="bi bi-bookmark-check"></i>
+        </div>
+        <div class="stat-number">{{ issued_books_count|default:0 }}</div>
+        <div class="stat-label">Books Issued</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, var(--warning-color), #d97706); color: white;">
+            <i class="bi bi-clock"></i>
+        </div>
+        <div class="stat-number">{{ pending_requests_count|default:0 }}</div>
+        <div class="stat-label">Pending Requests</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2); color: white;">
+            <i class="bi bi-people"></i>
+        </div>
+        <div class="stat-number">{{ total_students|default:0 }}</div>
+        <div class="stat-label">Total Students</div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="content-card">
+    <h5>Quick Actions</h5>
+    <div class="d-flex flex-wrap gap-3">
+        <a href="{% url 'librarian_requests' %}" class="btn btn-primary">
+            <i class="bi bi-clipboard-data me-2"></i>
+            Book Requests
+        </a>
+        <a href="{% url 'librarian_issued' %}" class="btn btn-success">
+            <i class="bi bi-bookmark-check me-2"></i>
+            Issued Books
+        </a>
+        <a href="{% url 'book_list' %}" class="btn btn-info">
+            <i class="bi bi-gear me-2"></i>
+            Manage Books
+        </a>
+    </div>
+</div>
+
+<!-- Pending Requests -->
+<div class="content-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Pending Requests</h5>
+        <a href="{% url 'librarian_requests' %}" class="btn btn-sm btn-outline-primary">View All</a>
+    </div>
+    {% if pending_requests %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Book Title</th>
+                    <th>Request Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in pending_requests %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-person-circle me-2 text-muted"></i>
+                            {{ request.student.username }}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-book me-2 text-muted"></i>
+                            {{ request.book.title }}
+                        </div>
+                    </td>
+                    <td>{{ request.request_date|date:"M d, Y" }}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <a href="{% url 'approve_request' request.pk %}" class="btn btn-success" title="Approve">
+                                <i class="bi bi-check-lg"></i>
+                            </a>
+                            <a href="{% url 'reject_request' request.pk %}" class="btn btn-danger" title="Reject">
+                                <i class="bi bi-x-lg"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-4">
+        <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+        <p class="text-muted mt-2">No pending requests.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Approved Requests Ready for Issuing -->
+<div class="content-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">Ready for Issuing</h5>
+        <a href="{% url 'librarian_requests' %}" class="btn btn-sm btn-outline-success">View All</a>
+    </div>
+    {% if approved_requests %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Book Title</th>
+                    <th>Approval Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in approved_requests %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-person-circle me-2 text-muted"></i>
+                            {{ request.student.username }}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-book me-2 text-muted"></i>
+                            {{ request.book.title }}
+                        </div>
+                    </td>
+                    <td>{{ request.approval_date|date:"M d, Y" }}</td>
+                    <td>
+                        <a href="{% url 'issue_book' request.pk %}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-check2-circle me-1"></i>
+                            Issue Book
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-4">
+        <i class="bi bi-check-circle text-muted" style="font-size: 3rem;"></i>
+        <p class="text-muted mt-2">No books ready for issuing.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'library/base.html' %}
+
+{% block content %}
+<h1 class="page-heading">My Issued Books</h1>
+
+<div class="content-card">
+    {% if issued_books %}
+    <h5 class="mb-3">Books Currently Issued to You</h5>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Book Title</th>
+                    <th>Author</th>
+                    <th>Issue Date</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in issued_books %}
+                <tr>
+                    <td>{{ book.book.title }}</td>
+                    <td>{{ book.book.author }}</td>
+                    <td>{{ book.issue_date|date:"M d, Y" }}</td>
+                    <td>{{ book.due_date|date:"M d, Y" }}</td>
+                    <td>
+                        {% if book.return_date %}
+                            <span class="badge bg-success">Returned</span>
+                        {% else %}
+                            <span class="badge bg-warning">Active</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-muted">You have no issued books.</p>
+    {% endif %}
+    <div class="mt-3">
+        <a href="{% url 'book_list' %}" class="btn btn-secondary me-2">Back to Books</a>
+        <a href="{% url 'my_requests' %}" class="btn btn-info">My Requests</a>
+    </div>
+</div>
+{% endblock %}

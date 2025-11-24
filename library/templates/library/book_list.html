@@ -1,0 +1,55 @@
+{% extends 'library/base.html' %}
+
+{% block content %}
+<h1 class="page-heading">Book List</h1>
+
+<div class="content-card">
+    <div class="mb-3">
+        {% if user.role == 'librarian' %}
+            <a href="{% url 'add_book' %}" class="btn btn-primary">Add Book</a>
+        {% endif %}
+        {% if user.role == 'student' %}
+            <a href="{% url 'my_requests' %}" class="btn btn-info me-2">My Requests</a>
+            <a href="{% url 'student_books' %}" class="btn btn-secondary">My Books</a>
+        {% else %}
+            {% comment %} <a href="{% url 'librarian_requests' %}" class="btn btn-info me-2"></a> {% endcomment %}
+            {% comment %} <a href="{% url 'librarian_issued' %}" class="btn btn-secondary"></a> {% endcomment %}
+        {% endif %}
+        {% comment %} {% if user.role == 'librarian' %}
+            <a href="{% url 'librarian_dashboard' %}" class="btn btn-success">Librarian Dashboard</a>
+        {% endif %}  {% endcomment %}
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Available Copies</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                <tr>
+                    <td>{{ book.title }}</td>
+                    <td>{{ book.author }}</td>
+                    <td>{{ book.available_copies }}/{{ book.total_copies }}</td>
+                    <td>
+                        {% if user.role == 'librarian' %}
+                            <a href="{% url 'update_book' book.pk %}" class="btn btn-sm btn-warning me-1">Update</a>
+                            <a href="{% url 'delete_book' book.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                        {% endif %}
+                        {% if user.role == 'student' and book.available_copies > 0 %}
+                            <a href="{% url 'request_book' book.pk %}" class="btn btn-sm btn-success">Request</a>
+                        {% elif user.role == 'student' %}
+                            <span class="text-muted">Not Available</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

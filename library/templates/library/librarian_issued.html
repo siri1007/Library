@@ -1,0 +1,51 @@
+{% extends 'library/base.html' %}
+
+{% block content %}
+<h1 class="page-heading">All Issued Books</h1>
+
+<div class="content-card">
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Book Title</th>
+                    <th>Issue Date</th>
+                    <th>Due Date</th>
+                    <th>Return Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for issued_book in issued_books %}
+                <tr>
+                    <td>{{ issued_book.student.username }}</td>
+                    <td>{{ issued_book.book.title }}</td>
+                    <td>{{ issued_book.issue_date|date:"M d, Y H:i" }}</td>
+                    <td>{{ issued_book.due_date|date:"M d, Y" }}</td>
+                    <td>
+                        {% if issued_book.return_date %}
+                        <span class="badge bg-success">Returned on {{ issued_book.return_date|date:"M d, Y" }}</span>
+                        {% else %}
+                        <span class="badge bg-warning">Not Returned</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if not issued_book.return_date %}
+                        <a href="{% url 'return_book' issued_book.pk %}" class="btn btn-primary btn-sm">Return Book</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No issued books found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="mt-3">
+        <a href="{% url 'librarian_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}
